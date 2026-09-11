@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moral Formation & Parental Responsibility — A Study on Parenting in Bangladesh</title>
+<meta name="description" content="A research study on parenting, moral development, and family life in Bangladesh — Department of Philosophy, Jagannath University">
+
+<!-- ============================================================
+     FIREBASE SETUP — READ ME FIRST
+     1. Go to https://console.firebase.google.com, create a project,
+        then create a Firestore database (start in "production mode").
+     2. Add a Web App to the project and copy the config object it
+        gives you into firebaseConfig below.
+     3. In Firestore > Rules, use something like:
+
+        rules_version = '2';
+        service cloud.firestore {
+          match /databases/{database}/documents {
+            match /submissions/{doc} {
+              allow create: if true;
+              allow read, update, delete: if false;
+            }
+            match /partial_exits/{doc} {
+              allow create: if true;
+              allow read, update, delete: if false;
+            }
+            match /screened_out/{doc} {
+              allow create: if true;
+              allow read, update, delete: if false;
+            }
+          }
+        }
+
+        This lets anyone submit a response but nobody read, edit or
+        delete them from the browser — only from the Firebase console
+        or a trusted backend. Adjust to taste.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Karla:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg: #F5EFE2;
+    --paper: #FFFDF7;
+    --ink: #26211A;
+    --ink-soft: #5B5347;
+    --deep: #1E3D3A;
+    --deep-light: #2C5450;
+    --brick: #B5502F;
+    --brick-dark: #8F3E23;
+    --gold: #C99A2E;
+    --line: #DED2B9;
+    --line-soft: #EAE0CC;
+    --error: #A23B2E;
+    --radius: 6px;
+    --shadow: 0 1px 0 rgba(38,33,26,0.04);
+    --maxw: 640px;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ -webkit-tap-highlight-color: transparent; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at top left, rgba(197,160,80,0.07), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(30,61,58,0.05), transparent 55%);
+    color: var(--ink);
+    font-family: 'Karla', 'Noto Sans Bengali', sans-serif;
+    min-height: 100vh;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    padding: 20px 16px 60px;
+    line-height:1.5;
+  }
+
+  :lang(bn), .bn-text{ font-family: 'Noto Sans Bengali', 'Karla', sans-serif; }
+
+  h1,h2,h3, .display{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    color: var(--deep);
+    letter-spacing: -0.01em;
+  }
+  h1.display[lang="bn"], h2.display[lang="bn"]{ font-family: 'Noto Sans Bengali','Fraunces', serif; letter-spacing:0; }
+
+  #topbar{ width:100%; max-width: var(--maxw); display:flex; justify-content:flex-end; margin-bottom: 10px; }
+  .lang-toggle{
+    display:flex; gap:3px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px;
+  }
+  .lang-toggle button{
+    border:none; background:transparent;
+    padding: 6px 13px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    font-family: 'Karla','Noto Sans Bengali', sans-serif;
+  }
+  .lang-toggle button.active{ background: var(--deep); color: #FFF9F0; }
+
+  #app{ width: 100%; max-width: var(--maxw); }
+
+  .thread{ display:flex; gap: 5px; margin-bottom: 22px; padding: 0 4px; }
+  .thread .stitch{ height: 3px; flex:1; background: var(--line); border-radius: 2px; overflow:hidden; position:relative; }
+  .thread .stitch.done{ background: var(--brick); }
+  .thread .stitch.current{ background: var(--line); }
+  .thread .stitch.current::after{
+    content:''; position:absolute; inset:0; background: var(--brick);
+    width: var(--fillpct, 0%); transition: width .3s ease;
+  }
+
+  .page-frame{
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 40px 34px;
+    position: relative;
+    box-shadow: var(--shadow);
+    animation: rise .45s cubic-bezier(.2,.8,.2,1);
+  }
+  .page-frame::before{
+    content:''; position:absolute; inset: 8px;
+    border: 1px dashed var(--line); border-radius: 3px; pointer-events:none;
+  }
+  @media (max-width: 520px){ .page-frame{ padding: 30px 20px; } }
+  @keyframes rise{ from{ opacity:0; transform: translateY(10px); } to{ opacity:1; transform: translateY(0); } }
+
+  .eyebrow{ font-size: 0.8rem; color: var(--ink-soft); margin: 0 0 10px; font-weight: 600; }
+  h1.display{ font-size: 2.05rem; line-height:1.18; margin: 0 0 14px; }
+  h2.display{ font-size: 1.55rem; line-height:1.25; margin: 0 0 12px; }
+
+  p{ margin: 0 0 16px; color: var(--ink); }
+  p.lede{ font-size: 1.04rem; color: var(--ink-soft); }
+  p.fine{ font-size: 0.87rem; color: var(--ink-soft); }
+  p.bn-line{ font-size: 0.92rem; color: var(--ink-soft); margin-top: -10px; }
+
+  ul.plain{ margin: 0 0 18px; padding-left: 20px; }
+  ul.plain li{ margin-bottom: 10px; color: var(--ink); }
+  ul.plain li .bn-line{ display:block; margin: 3px 0 0; font-size:0.86rem; }
+
+  .actions{ display:flex; gap: 12px; margin-top: 26px; flex-wrap: wrap; }
+  .actions.stack{ flex-direction: column; }
+
+  button{ font-family: 'Karla','Noto Sans Bengali', sans-serif; cursor:pointer; }
+
+  .btn{
+    border:none; border-radius: var(--radius); padding: 13px 22px;
+    font-size: 0.98rem; font-weight: 600;
+    transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+    line-height:1.3;
+  }
+  .btn .bn-line{ display:block; font-size:0.82rem; font-weight:500; opacity:0.85; margin-top:2px; }
+  .btn:active{ transform: scale(0.98); }
+  .btn-primary{ background: var(--brick); color: #FFF9F0; }
+  .btn-primary:hover{ background: var(--brick-dark); }
+  .btn-quiet{ background: transparent; color: var(--ink-soft); border: 1px solid var(--line); }
+  .btn-quiet:hover{ border-color: var(--ink-soft); color: var(--ink); }
+  .btn-ghost{ background: transparent; color: var(--brick); padding: 13px 6px; }
+  .btn-ghost:hover{ text-decoration: underline; }
+  .btn:disabled{ opacity:0.4; cursor:not-allowed; }
+
+  .btn-row-between{ display:flex; justify-content: space-between; align-items:center; margin-top: 30px; gap: 12px; }
+
+  .cat-grid{ display:grid; gap: 14px; margin-top: 22px; }
+  .cat-card{
+    text-align:left; background: var(--paper); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 18px 20px; display:flex; flex-direction:column; gap:4px;
+  }
+  .cat-card:hover{ border-color: var(--brick); }
+  .cat-card .cat-title{ font-family:'Fraunces', serif; font-size:1.15rem; color: var(--deep); font-weight:600; }
+  .cat-card .cat-title .bn-line{ font-family:'Noto Sans Bengali', serif; font-size:0.95rem; font-weight:600; display:block; margin-top:1px; }
+  .cat-card .cat-desc{ font-size: 0.9rem; color: var(--ink-soft); }
+  .cat-card .cat-desc .bn-line{ margin-top:4px; }
+
+  .field{ margin-bottom: 20px; }
+  .field label{ display:block; font-weight:600; margin-bottom:8px; font-size:0.95rem; }
+  .field label .bn-line{ display:block; font-weight:500; font-size:0.86rem; color: var(--ink-soft); margin-top:3px; }
+  .field .hint{ font-size:0.82rem; color: var(--ink-soft); margin-top:5px; }
+  .field .hint .bn-line{ margin-top:3px; }
+  .field input[type="text"], .field input[type="number"], .field select, .field textarea{
+    width:100%; padding: 12px 13px; border: 1px solid var(--line); border-radius: var(--radius);
+    background: var(--bg); font-family:'Karla','Noto Sans Bengali', sans-serif; font-size: 1rem; color: var(--ink);
+  }
+  .field textarea{ min-height: 120px; resize: vertical; }
+  .field input:focus, .field select:focus, .field textarea:focus{
+    outline: none; border-color: var(--brick); box-shadow: 0 0 0 3px rgba(181,80,47,0.13);
+  }
+
+  .error-text{ color: var(--error); font-size: 0.85rem; margin-top: 6px; display:none; }
+  .error-text.show{ display:block; }
+
+  .pill-group{ display:flex; flex-wrap:wrap; gap:8px; }
+  .pill{ border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 9px 16px; font-size: 0.92rem; color: var(--ink); }
+  .pill.selected{ background: var(--deep); border-color: var(--deep); color: #FFF9F0; }
+
+  .scale-section-label{ font-size: 0.82rem; color: var(--ink-soft); margin-bottom: 6px; font-weight:600; }
+  .scale-question{ font-size: 1.35rem; margin: 6px 0 4px; line-height:1.32; }
+  .scale-question-bn{ font-size: 1.05rem; margin: 0 0 26px; line-height:1.5; color: var(--ink-soft); font-weight:500; }
+
+  .scale-track{ margin-bottom: 8px; }
+  .scale-endlabels{ display:flex; justify-content:space-between; font-size: 0.78rem; color: var(--ink-soft); margin-bottom: 10px; font-weight:600; text-align:right; }
+  .scale-endlabels span:first-child{ text-align:left; }
+  .scale-endlabels .bn-line{ display:block; font-weight:500; opacity:0.9; }
+  .scale-buttons{ display:flex; gap:8px; }
+  .scale-btn{
+    flex:1; border: 1px solid var(--line); background: var(--paper); border-radius: var(--radius);
+    padding: 14px 4px 10px; display:flex; flex-direction:column; align-items:center; gap:5px;
+    font-size: 0.7rem; color: var(--ink-soft); transition: all .15s ease; text-align:center;
+  }
+  .scale-btn .num{
+    width: 30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-weight:600; font-size:0.95rem;
+    background: var(--bg); color: var(--ink); border: 1px solid var(--line);
+  }
+  .scale-btn .bn-line{ font-size:0.68rem; }
+  .scale-btn:hover{ border-color: var(--brick); }
+  .scale-btn.selected{ border-color: var(--brick); background: rgba(181,80,47,0.06); }
+  .scale-btn.selected .num{ background: var(--brick); color:#FFF9F0; border-color: var(--brick); }
+  @media (max-width: 460px){
+    .scale-buttons{ flex-wrap:wrap; }
+    .scale-btn{ flex: 1 1 30%; min-width: 90px; }
+  }
+
+  .gate-box{ border: 1px solid var(--line); background: var(--bg); border-radius: var(--radius); padding: 18px 18px; margin: 18px 0 4px; font-size: 0.92rem; color: var(--ink-soft); }
+  .gate-box .bn-line{ display:block; margin-top:10px; padding-top:10px; border-top: 1px dashed var(--line-soft); }
+
+  .kicker-dot{ display:inline-block; width:7px; height:7px; border-radius:50%; background: var(--gold); margin-right:8px; vertical-align: middle; }
+
+  footer.site-foot{ text-align:center; color: var(--ink-soft); font-size: 0.8rem; margin-top: 22px; padding: 0 10px; max-width: var(--maxw); }
+  footer.site-foot .bn-line{ display:block; margin-top:4px; }
+
+  .loader-dot{ display:inline-block; width:8px;height:8px;border-radius:50%; background: var(--brick); margin-right:4px; animation: pulse 1s infinite ease-in-out; }
+  .loader-dot:nth-child(2){ animation-delay:.15s; }
+  .loader-dot:nth-child(3){ animation-delay:.3s; }
+  @keyframes pulse{ 0%,100%{ opacity:.25; transform: scale(0.85); } 50%{ opacity:1; transform: scale(1);} }
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="lang-toggle" id="lang-toggle">
+    <button data-lang="en" id="lang-en">EN</button>
+    <button data-lang="bn" id="lang-bn">বাংলা</button>
+  </div>
+</div>
+
+<div id="app"></div>
+
+<script type="module">
+/* =========================================================
+   FIREBASE — project: data-collection-7f691
+   ========================================================= */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBevdf6yg0tuTINloShHGjpx7ncEt4kkLM",
+  authDomain: "data-collection-7f691.firebaseapp.com",
+  projectId: "data-collection-7f691",
+  storageBucket: "data-collection-7f691.firebasestorage.app",
+  messagingSenderId: "342185705576",
+  appId: "1:342185705576:web:792c53e06d103a1d6dbbdd"
+};
+
+let db = null;
+try{
+  const fbApp = initializeApp(firebaseConfig);
+  db = getFirestore(fbApp);
+}catch(e){
+  console.warn("Firebase not configured yet — responses will not be saved remotely.", e);
+}
+
+async function saveToFirestore(colName, data){
+  if(!db){
+    console.log("[local only, Firebase not configured]", colName, data);
+    return { ok:false, offline:true };
+  }
+  try{
+    await addDoc(collection(db, colName), { ...data, savedAt: serverTimestamp() });
+    return { ok:true };
+  }catch(e){
+    console.error("Firestore write failed:", e);
+    return { ok:false, error: e.message };
+  }
+}
+
+/* =========================================================
+   TRANSLATION HELPER
+   t(en, bn) returns bn when the current language is Bangla
+   and a translation exists, otherwise falls back to English.
+   bnLine(bn) wraps a Bangla string as a quiet secondary line,
+   shown under the English text when Bangla translations exist
+   but the interface language is English (so both are visible
+   together on the questions themselves).
+   ========================================================= */
+function t(en, bn){ return (state.lang === 'bn' && bn) ? bn : en; }
+function bnLine(bn){ return bn ? `<span class="bn-line" lang="bn">${bn}</span>` : ''; }
+
+/* =========================================================
+   SCALES
+   ========================================================= */
+const SCALES = {
+  freq: {
+    values: [1,2,3,4,5],
+    labels: ['Never','Rarely','Sometimes','Often','Always'],
+    labels_bn: ['কখনো না','কালেভদ্রে','মাঝে মাঝে','প্রায়ই','সবসময়'],
+    low: 'Never', high: 'Always', low_bn: 'কখনো না', high_bn: 'সবসময়'
+  },
+  pastMonth: {
+    values: [0,1,2,3,4],
+    labels: ['Never','Once','2–5 times','6–10 times','More than 10 times'],
+    labels_bn: ['কখনো না','একবার','২–৫ বার','৬–১০ বার','১০ বারের বেশি'],
+    low: 'Never', high: 'More than 10 times', low_bn: 'কখনো না', high_bn: '১০ বারের বেশি'
+  },
+  agree: {
+    values: [1,2,3,4,5],
+    labels: ['Strongly disagree','Disagree','Neutral','Agree','Strongly agree'],
+    labels_bn: ['একেবারেই দ্বিমত','দ্বিমত','নিরপেক্ষ','একমত','সম্পূর্ণ একমত'],
+    low: 'Strongly disagree', high: 'Strongly agree', low_bn: 'একেবারেই দ্বিমত', high_bn: 'সম্পূর্ণ একমত'
+  },
+  freqOften: {
+    values: [1,2,3,4,5],
+    labels: ['Never','Rarely','Sometimes','Often','Very often'],
+    labels_bn: ['কখনো না','কালেভদ্রে','মাঝে মাঝে','প্রায়ই','অতি ঘনঘন'],
+    low: 'Never', high: 'Very often', low_bn: 'কখনো না', high_bn: 'অতি ঘনঘন'
+  }
+};
+
+/* =========================================================
+   QUESTION BANK (English + Bangla)
+   ========================================================= */
+const CATEGORIES = {
+  parent: {
+    label: 'Parent', label_bn: 'অভিভাবক',
+    blurb: 'You are currently raising at least one child between 5 and 18 years old.',
+    blurb_bn: 'আপনি বর্তমানে ৫ থেকে ১৮ বছর বয়সী অন্তত একটি সন্তান লালন-পালন করছেন।',
+    sections: [
+      {
+        id: '1.1', type: 'demo', title: 'A little about you and your family',
+        title_bn: 'আপনার এবং আপনার পরিবার সম্পর্কে কিছু তথ্য',
+        note: 'This helps us understand the range of families in the study. Nothing here can identify you.',
+        note_bn: 'এটি আমাদের গবেষণায় অংশ নেওয়া পরিবারগুলোর বৈচিত্র্য বুঝতে সাহায্য করে। এখানে কিছুই আপনাকে শনাক্ত করতে পারবে না।',
+        fields: [
+          { code:'1.1.1', key:'age', label:'Your age', label_bn:'আপনার বয়স', kind:'number', min:18, max:100, required:true },
+          { code:'1.1.2', key:'gender', label:'Gender', label_bn:'লিঙ্গ', kind:'select', required:true,
+            options:['Male','Female','Other','Prefer not to say'],
+            options_bn:['পুরুষ','নারী','অন্যান্য','বলতে চাই না'] },
+          { code:'1.1.3', key:'education', label:'Highest level of education completed', label_bn:'সর্বোচ্চ শিক্ষাগত যোগ্যতা', kind:'select', required:true,
+            options:["None","Primary","Secondary","Higher secondary","Bachelor's","Master's or higher"],
+            options_bn:['কোনোটিই না','প্রাথমিক','মাধ্যমিক','উচ্চমাধ্যমিক','স্নাতক','স্নাতকোত্তর বা তদূর্ধ্ব'] },
+          { code:'1.1.4', key:'income', label:'Monthly household income bracket (BDT)', label_bn:'মাসিক পারিবারিক আয়ের পরিসীমা (টাকা)', kind:'select', required:true,
+            options:['Under 20,000','20,000–40,000','40,000–70,000','70,000–120,000','Over 120,000'],
+            options_bn:['২০,০০০ এর নিচে','২০,০০০–৪০,০০০','৪০,০০০–৭০,০০০','৭০,০০০–১,২০,০০০','১,২০,০০০ এর বেশি'] },
+          { code:'1.1.5', key:'familyStructure', label:'Family structure', label_bn:'পারিবারিক কাঠামো', kind:'select', required:true,
+            options:['Nuclear','Joint or extended'], options_bn:['একক পরিবার','যৌথ পরিবার'] },
+          { code:'1.1.6', key:'numChildren', label:'Number of children you have', label_bn:'আপনার সন্তানের সংখ্যা', kind:'number', min:1, max:20, required:true },
+          { code:'1.1.7a', key:'childAge', label:"Age of the child you'll answer about", label_bn:'যে সন্তান সম্পর্কে আপনি উত্তর দেবেন তার বয়স', kind:'number', min:5, max:18, required:true,
+            hint:"If you have more than one child aged 5–18, please think of the one whose birthday comes next.",
+            hint_bn:'যদি আপনার ৫–১৮ বছর বয়সী একাধিক সন্তান থাকে, তাহলে যার জন্মদিন সবার আগে আসবে তার কথা ভেবে উত্তর দিন।' },
+          { code:'1.1.7b', key:'childGender', label:"That child's gender", label_bn:'সেই সন্তানের লিঙ্গ', kind:'select', required:true,
+            options:['Male','Female'], options_bn:['পুরুষ','নারী'] },
+          { code:'1.1.8', key:'religion', label:'Religious or cultural background (optional)', label_bn:'ধর্মীয় বা সাংস্কৃতিক পরিচয় (ঐচ্ছিক)', kind:'text', required:false }
+        ]
+      },
+      { id:'1.2', type:'scale', title:'Everyday parenting', title_bn:'দৈনন্দিন সন্তান লালন-পালন', scale:'freq',
+        note:'Thinking about your day-to-day approach with your child —',
+        note_bn:'আপনার সন্তানের সাথে আপনার দৈনন্দিন আচরণের কথা ভেবে —',
+        items:[
+          {code:'1.2.1', text:'I explain the reasoning behind a rule when I ask my child to follow it.', text_bn:'আমি যখন আমার সন্তানকে কোনো নিয়ম মানতে বলি, তখন তার কারণ ব্যাখ্যা করি।'},
+          {code:'1.2.2', text:'I encourage my child to freely express disagreement with me.', text_bn:'আমি আমার সন্তানকে আমার সাথে দ্বিমত পোষণ করতে স্বাধীনভাবে উৎসাহিত করি।'},
+          {code:'1.2.3', text:'I praise my child when they behave well.', text_bn:'আমার সন্তান ভালো আচরণ করলে আমি তার প্রশংসা করি।'},
+          {code:'1.2.4', text:"I take my child's preferences into account when making decisions that affect them.", text_bn:'আমার সন্তানকে প্রভাবিত করে এমন সিদ্ধান্ত নেওয়ার সময় আমি তার পছন্দ-অপছন্দ বিবেচনা করি।'},
+          {code:'1.2.5', text:'I use physical punishment (e.g., hitting, slapping) to discipline my child.', text_bn:'আমি আমার সন্তানকে শাসন করতে শারীরিক শাস্তি (যেমন: মারা, চড় দেওয়া) ব্যবহার করি।'},
+          {code:'1.2.6', text:'I shout or scold when my child misbehaves.', text_bn:'আমার সন্তান দুর্ব্যবহার করলে আমি চিৎকার করি বা বকা দিই।'},
+          {code:'1.2.7', text:'I expect my child to obey my decisions without asking why.', text_bn:'আমি চাই আমার সন্তান কারণ না জেনেই আমার সিদ্ধান্ত মেনে নিক।'},
+          {code:'1.2.8', text:'I compare my child unfavorably to siblings or other children.', text_bn:'আমি আমার সন্তানকে ভাইবোন বা অন্য শিশুদের সাথে নেতিবাচকভাবে তুলনা করি।'},
+          {code:'1.2.9', text:"I give in to my child's demands to avoid a conflict.", text_bn:'ঝগড়া এড়াতে আমি আমার সন্তানের দাবির কাছে নতি স্বীকার করি।'},
+          {code:'1.2.10', text:'I set rules for my child but rarely enforce them.', text_bn:'আমি আমার সন্তানের জন্য নিয়ম ঠিক করি কিন্তু তা কার্যকর করি খুব কমই।'}
+        ]
+      },
+      { id:'1.3-gate', type:'checkpoint',
+        title:'Before we continue', title_bn:'আমরা এগোনোর আগে',
+        text:"The next section asks about specific disciplinary actions in the past month — including some about physical discipline. There are no right or wrong answers, and nothing you share can be traced back to you. You're welcome to continue, skip just this section, or stop here altogether.",
+        text_bn:'পরবর্তী অংশে গত এক মাসে নেওয়া নির্দিষ্ট শাসনমূলক পদক্ষেপ সম্পর্কে প্রশ্ন করা হবে — এর মধ্যে কিছু শারীরিক শাসন সম্পর্কিতও আছে। এখানে সঠিক বা ভুল কোনো উত্তর নেই, এবং আপনার দেওয়া তথ্য থেকে আপনাকে শনাক্ত করা যাবে না। আপনি চাইলে চালিয়ে যেতে পারেন, শুধু এই অংশটি এড়িয়ে যেতে পারেন, অথবা এখানেই থেমে যেতে পারেন।'
+      },
+      { id:'1.3', type:'scale', title:'In the past month', title_bn:'গত এক মাসে', scale:'pastMonth',
+        note:'Thinking about the past month specifically, how often have you —',
+        note_bn:'বিশেষভাবে গত এক মাসের কথা ভেবে, আপনি কতবার —',
+        skippable:true,
+        items:[
+          {code:'1.3.1', text:'Explained why something my child did was wrong.', text_bn:'আমার সন্তান যা ভুল করেছে তা কেন ভুল তা ব্যাখ্যা করেছি।'},
+          {code:'1.3.2', text:'Shouted, yelled, or screamed at my child.', text_bn:'আমার সন্তানের উপর চিৎকার করেছি বা চেঁচিয়েছি।'},
+          {code:'1.3.3', text:'Called my child names such as "stupid" or "useless."', text_bn:'আমার সন্তানকে "বোকা" বা "অকর্মণ্য" এর মতো নাম ধরে ডেকেছি।'},
+          {code:'1.3.4', text:'Spanked or hit my child with a bare hand.', text_bn:'খালি হাতে আমার সন্তানকে চড় মেরেছি বা মেরেছি।'},
+          {code:'1.3.5', text:'Hit my child with an object (stick, belt, etc.).', text_bn:'কোনো জিনিস (লাঠি, বেল্ট ইত্যাদি) দিয়ে আমার সন্তানকে মেরেছি।'},
+          {code:'1.3.6', text:'Threatened to hit my child but did not do it.', text_bn:'আমার সন্তানকে মারার হুমকি দিয়েছি কিন্তু মারিনি।'},
+          {code:'1.3.7', text:'Took away a privilege (e.g., screen time, outing) as a consequence.', text_bn:'শাস্তি হিসেবে কোনো সুযোগ-সুবিধা (যেমন: স্ক্রিন টাইম, বাইরে যাওয়া) কেড়ে নিয়েছি।'}
+        ]
+      },
+      { id:'1.4', type:'scale', title:'Warmth at home', title_bn:'ঘরে উষ্ণতা', scale:'freq',
+        items:[
+          {code:'1.4.1', text:'My child feels comfortable coming to me with problems.', text_bn:'আমার সন্তান সমস্যা নিয়ে আমার কাছে আসতে স্বাচ্ছন্দ্য বোধ করে।'},
+          {code:'1.4.2', text:'I show affection openly (hugs, kind words) to my child.', text_bn:'আমি আমার সন্তানকে খোলাখুলিভাবে আদর দেখাই (জড়িয়ে ধরা, মিষ্টি কথা)।'},
+          {code:'1.4.3', text:'The atmosphere at home feels tense or fearful to my child.', text_bn:'আমার সন্তানের কাছে বাড়ির পরিবেশ উত্তেজনাপূর্ণ বা ভীতিকর মনে হয়।'},
+          {code:'1.4.4', text:'I make time to be emotionally available to my child, separate from academic or household matters.', text_bn:'পড়াশোনা বা ঘরের কাজ থেকে আলাদা করে, আমি আমার সন্তানের জন্য মানসিকভাবে সময় বের করি।'}
+        ]
+      },
+      { id:'1.5', type:'scale', title:'What you believe', title_bn:'আপনি যা বিশ্বাস করেন', scale:'agree',
+        note:'These are about beliefs, not actions — there is no wrong answer.',
+        note_bn:'এগুলো বিশ্বাস সম্পর্কে, কাজ সম্পর্কে নয় — এখানে কোনো ভুল উত্তর নেই।',
+        items:[
+          {code:'1.5.1', text:'Physical discipline is sometimes necessary to raise a respectful child.', text_bn:'শ্রদ্ধাশীল সন্তান গড়ে তুলতে মাঝে মাঝে শারীরিক শাসন প্রয়োজন।'},
+          {code:'1.5.2', text:"My child's opinion should shape household rules and decisions that affect them.", text_bn:'আমার সন্তানকে প্রভাবিত করে এমন পারিবারিক নিয়ম ও সিদ্ধান্তে তার মতামতের প্রতিফলন থাকা উচিত।'},
+          {code:'1.5.3', text:"Good parenting means prioritizing a child's obedience over their independent thinking.", text_bn:'ভালো সন্তান লালন-পালন মানে সন্তানের স্বাধীন চিন্তার চেয়ে বাধ্যতাকে বেশি গুরুত্ব দেওয়া।'},
+          {code:'1.5.4', text:"It is a parent's duty to prepare a child for the child's own future, not to fulfill the parent's own expectations.", text_bn:'বাবা-মায়ের নিজস্ব প্রত্যাশা পূরণের জন্য নয়, বরং সন্তানের নিজের ভবিষ্যতের জন্য তাকে প্রস্তুত করাই বাবা-মায়ের দায়িত্ব।'},
+          {code:'1.5.5', text:'A child should be treated as a person with their own moral worth, not primarily as someone who will bring honor or security to the family.', text_bn:'একটি শিশুকে তার নিজস্ব নৈতিক মূল্যসম্পন্ন একজন মানুষ হিসেবে দেখা উচিত, মূলত পরিবারের জন্য সম্মান বা নিরাপত্তা বয়ে আনবে এমন কেউ হিসেবে নয়।'},
+          {code:'1.5.6', text:"A child's emotional needs matter as much as their academic performance.", text_bn:'একটি শিশুর মানসিক চাহিদা তার পড়াশোনার ফলাফলের মতোই গুরুত্বপূর্ণ।'},
+          {code:'1.5.7', text:"Discipline that causes fear can still be a loving act if the parent's intentions are good.", text_bn:'বাবা-মায়ের উদ্দেশ্য ভালো হলে, ভয় সৃষ্টিকারী শাসনও একটি স্নেহপূর্ণ কাজ হতে পারে।'}
+        ]
+      },
+      { id:'1.6', type:'scale', title:'School and comparison', title_bn:'লেখাপড়া ও তুলনা', scale:'freq',
+        items:[
+          {code:'1.6.1', text:"I compare my child's grades or achievements to other children.", text_bn:'আমি আমার সন্তানের ফলাফল বা অর্জনকে অন্য শিশুদের সাথে তুলনা করি।'},
+          {code:'1.6.2', text:'I show visible disappointment when my child does not rank at the top of their class.', text_bn:'আমার সন্তান ক্লাসে শীর্ষে না থাকলে আমি স্পষ্ট হতাশা প্রকাশ করি।'},
+          {code:'1.6.3', text:'I make sure my child has time to rest and play in addition to studying.', text_bn:'পড়াশোনার পাশাপাশি আমার সন্তানের বিশ্রাম ও খেলার সময় আছে কিনা তা আমি নিশ্চিত করি।'}
+        ]
+      },
+      { id:'1.7', type:'open', title:'In your own words', title_bn:'নিজের ভাষায়',
+        code:'1.7.1', prompt:'What makes someone a good parent?', prompt_bn:'কী একজন ভালো অভিভাবক তৈরি করে?' }
+    ]
+  },
+
+  student: {
+    label:'Student', label_bn:'শিক্ষার্থী',
+    blurb: 'You are 18–25 years old and spent your childhood in Bangladesh.',
+    blurb_bn: 'আপনার বয়স ১৮–২৫ বছর এবং আপনি আপনার শৈশব বাংলাদেশে কাটিয়েছেন।',
+    sections: [
+      {
+        id:'2.1', type:'demo', title:'A little about you', title_bn:'আপনার সম্পর্কে কিছু তথ্য',
+        note:'A few background questions before we begin.', note_bn:'শুরু করার আগে কিছু পটভূমি সংক্রান্ত প্রশ্ন।',
+        fields:[
+          { code:'2.1.1', key:'age', label:'Your age', label_bn:'আপনার বয়স', kind:'number', min:18, max:25, required:true },
+          { code:'2.1.2', key:'gender', label:'Gender', label_bn:'লিঙ্গ', kind:'select', required:true,
+            options:['Male','Female','Other','Prefer not to say'], options_bn:['পুরুষ','নারী','অন্যান্য','বলতে চাই না'] },
+          { code:'2.1.3', key:'urbanChildhood', label:'Did you spend your childhood (ages 5–18) in an urban Bangladeshi household?',
+            label_bn:'আপনি কি আপনার শৈশব (৫–১৮ বছর বয়স) বাংলাদেশের কোনো শহুরে পরিবারে কাটিয়েছেন?',
+            kind:'select', required:true, options:['Yes','No'], options_bn:['হ্যাঁ','না'], eligibility:{ failValue:'No' } },
+          { code:'2.1.4', key:'familyStructure', label:'Family structure growing up', label_bn:'বেড়ে ওঠার সময়কার পারিবারিক কাঠামো', kind:'select', required:true,
+            options:['Nuclear','Joint or extended'], options_bn:['একক পরিবার','যৌথ পরিবার'] },
+          { code:'2.1.5', key:'incomeGrowingUp', label:'Household income bracket growing up (best estimate, BDT)',
+            label_bn:'বেড়ে ওঠার সময়কার পারিবারিক আয়ের পরিসীমা (আনুমানিক, টাকা)', kind:'select', required:true,
+            options:['Under 20,000','20,000–40,000','40,000–70,000','70,000–120,000','Over 120,000'],
+            options_bn:['২০,০০০ এর নিচে','২০,০০০–৪০,০০০','৪০,০০০–৭০,০০০','৭০,০০০–১,২০,০০০','১,২০,০০০ এর বেশি'] }
+        ]
+      },
+      { id:'2.2-gate', type:'checkpoint',
+        title:'Before we continue', title_bn:'আমরা এগোনোর আগে',
+        text:"The next questions ask you to recall parenting practices from your childhood — including some about physical discipline. Take your time, and know that you can continue, skip this section, or stop here altogether.",
+        text_bn:'পরবর্তী প্রশ্নগুলোতে আপনার শৈশবের সন্তান লালন-পালনের অভিজ্ঞতা মনে করতে বলা হবে — এর মধ্যে কিছু শারীরিক শাসন সম্পর্কিতও আছে। সময় নিন, এবং মনে রাখবেন আপনি চালিয়ে যেতে পারেন, এই অংশ এড়িয়ে যেতে পারেন, অথবা এখানেই থেমে যেতে পারেন।'
+      },
+      { id:'2.2', type:'scale', title:'Looking back', title_bn:'ফিরে তাকিয়ে', scale:'freq',
+        note:'Thinking back on your childhood —', note_bn:'আপনার শৈশবের কথা মনে করে —',
+        skippable:true,
+        items:[
+          {code:'2.2.1', text:'My parents explained the reasoning behind rules.', text_bn:'আমার বাবা-মা নিয়মের পেছনের কারণ ব্যাখ্যা করতেন।'},
+          {code:'2.2.2', text:'My parents encouraged me to express disagreement.', text_bn:'আমার বাবা-মা আমাকে দ্বিমত প্রকাশ করতে উৎসাহিত করতেন।'},
+          {code:'2.2.3', text:'My parents used physical punishment to discipline me.', text_bn:'আমার বাবা-মা আমাকে শাসন করতে শারীরিক শাস্তি ব্যবহার করতেন।'},
+          {code:'2.2.4', text:'My parents expected me to obey without asking why.', text_bn:'আমার বাবা-মা চাইতেন আমি কারণ না জেনেই তাদের কথা মেনে নিই।'},
+          {code:'2.2.5', text:'My parents compared me unfavorably to siblings or other children.', text_bn:'আমার বাবা-মা আমাকে ভাইবোন বা অন্য শিশুদের সাথে নেতিবাচকভাবে তুলনা করতেন।'}
+        ]
+      },
+      { id:'2.3', type:'scale', title:'How you see things', title_bn:'আপনি বিষয়গুলো কীভাবে দেখেন', scale:'agree',
+        items:[
+          {code:'2.3.1', text:"It's okay to bend the truth to avoid a parent's punishment.", text_bn:'বাবা-মায়ের শাস্তি এড়াতে সত্য একটু বাঁকানো ঠিক আছে।'},
+          {code:'2.3.2', text:'People who get treated badly usually did something to bring it on themselves.', text_bn:'যাদের সাথে খারাপ ব্যবহার করা হয়, তারা সাধারণত নিজেরাই এমন কিছু করেছে যার কারণে তা হয়েছে।'},
+          {code:'2.3.3', text:"It's not a big deal to hurt someone's feelings if they upset you first.", text_bn:'কেউ আগে আপনাকে বিরক্ত করলে তার অনুভূতিতে আঘাত দেওয়া তেমন কোনো বড় ব্যাপার না।'},
+          {code:'2.3.4', text:'Harsh punishment as a child taught me right from wrong.', text_bn:'শৈশবে কঠোর শাস্তি আমাকে সঠিক ও ভুলের পার্থক্য শিখিয়েছে।'}
+        ]
+      },
+      { id:'2.4', type:'scale', title:'Your relationship with your parents', title_bn:'বাবা-মায়ের সাথে আপনার সম্পর্ক', scale:'agree',
+        items:[
+          {code:'2.4.1', text:'I felt emotionally close to my parent(s) growing up.', text_bn:'বেড়ে ওঠার সময় আমি বাবা-মায়ের সাথে মানসিকভাবে ঘনিষ্ঠ অনুভব করতাম।'},
+          {code:'2.4.2', text:'I could rely on my parent(s) for support when I needed it.', text_bn:'প্রয়োজনের সময় আমি বাবা-মায়ের সহায়তার উপর নির্ভর করতে পারতাম।'},
+          {code:'2.4.3', text:'I often felt anxious about whether my parent(s) approved of me.', text_bn:'বাবা-মা আমাকে অনুমোদন করেন কিনা তা নিয়ে আমি প্রায়ই উদ্বিগ্ন থাকতাম।'}
+        ]
+      },
+      { id:'2.5', type:'scale', title:'School and comparison', title_bn:'লেখাপড়া ও তুলনা', scale:'freq',
+        items:[
+          {code:'2.5.1', text:"My parents compared my grades to other children's.", text_bn:'আমার বাবা-মা আমার ফলাফলকে অন্য শিশুদের সাথে তুলনা করতেন।'},
+          {code:'2.5.2', text:"My parents showed visible disappointment when I didn't rank at the top.", text_bn:'আমি শীর্ষে না থাকলে আমার বাবা-মা স্পষ্ট হতাশা প্রকাশ করতেন।'}
+        ]
+      },
+      { id:'2.6', type:'open', title:'Looking back', title_bn:'ফিরে তাকিয়ে',
+        code:'2.6.1', prompt:'What is one thing you wish your parents had done differently?',
+        prompt_bn:'এমন একটি বিষয় বলুন যা আপনি চান আপনার বাবা-মা ভিন্নভাবে করতেন।' }
+    ]
+  },
+
+  teacher: {
+    label:'Teacher', label_bn:'শিক্ষক',
+    blurb: 'You have at least two years of experience teaching at the primary or secondary level.',
+    blurb_bn: 'আপনার প্রাথমিক বা মাধ্যমিক স্তরে পড়ানোর অন্তত দুই বছরের অভিজ্ঞতা আছে।',
+    sections: [
+      {
+        id:'3.1', type:'demo', title:'A little about your experience', title_bn:'আপনার অভিজ্ঞতা সম্পর্কে কিছু তথ্য',
+        fields:[
+          { code:'3.1.1', key:'yearsExperience', label:'Years of teaching experience', label_bn:'শিক্ষকতার অভিজ্ঞতা (বছর)', kind:'number', min:0, max:60, required:true,
+            eligibility:{ failIfLessThan:2 } },
+          { code:'3.1.2', key:'levelTaught', label:'Level taught', label_bn:'যে স্তরে পড়ান', kind:'select', required:true,
+            options:['Primary','Secondary'], options_bn:['প্রাথমিক','মাধ্যমিক'] },
+          { code:'3.1.3', key:'ses', label:'Approximate socioeconomic range of students you teach',
+            label_bn:'আপনি যে শিক্ষার্থীদের পড়ান তাদের আনুমানিক আর্থ-সামাজিক পরিসর', kind:'select', required:true,
+            options:['Low','Mixed-low','Middle','Mixed-high','High'],
+            options_bn:['নিম্ন','মিশ্র-নিম্ন','মধ্যম','মিশ্র-উচ্চ','উচ্চ'] }
+        ]
+      },
+      { id:'3.2', type:'scale', title:'What you notice in the classroom', title_bn:'শ্রেণিকক্ষে আপনি যা লক্ষ্য করেন', mixedScale:true,
+        note:'Based on your experience with students generally — not any one student.',
+        note_bn:'সাধারণভাবে শিক্ষার্থীদের সাথে আপনার অভিজ্ঞতার ভিত্তিতে — কোনো নির্দিষ্ট শিক্ষার্থীকে উদ্দেশ্য করে নয়।',
+        items:[
+          {code:'3.2.1', scale:'agree', text:'In my experience, students who seem anxious or fearful of making mistakes often mention strict discipline at home.',
+            text_bn:'আমার অভিজ্ঞতায়, যেসব শিক্ষার্থী ভুল করতে ভয় পায় বা উদ্বিগ্ন থাকে, তারা প্রায়ই বাড়িতে কঠোর শাসনের কথা উল্লেখ করে।'},
+          {code:'3.2.2', scale:'agree', text:'I notice students who struggle to express disagreement respectfully, as if unused to being asked their opinion.',
+            text_bn:'আমি লক্ষ্য করি কিছু শিক্ষার্থী শ্রদ্ধাপূর্ণভাবে দ্বিমত প্রকাশ করতে সংগ্রাম করে, যেন তাদের মতামত জিজ্ঞাসা করার অভ্যাস নেই।'},
+          {code:'3.2.3', scale:'agree', text:'Academic pressure from home appears to be a common source of student stress in my classroom.',
+            text_bn:'আমার শ্রেণিকক্ষে বাড়ি থেকে আসা পড়াশোনার চাপ শিক্ষার্থীদের মানসিক চাপের একটি সাধারণ কারণ বলে মনে হয়।'},
+          {code:'3.2.4', scale:'freqOften', text:'Students have disclosed experiences of physical or harsh verbal discipline at home to me or in class discussion.',
+            text_bn:'শিক্ষার্থীরা আমার কাছে বা ক্লাসের আলোচনায় বাড়িতে শারীরিক বা কঠোর মৌখিক শাসনের অভিজ্ঞতার কথা প্রকাশ করেছে।'},
+          {code:'3.2.5', scale:'agree', text:'In my experience, students with a calmer, more secure home environment tend to show more consideration toward classmates.',
+            text_bn:'আমার অভিজ্ঞতায়, যেসব শিক্ষার্থীর বাড়ির পরিবেশ শান্ত ও নিরাপদ, তারা সহপাঠীদের প্রতি বেশি বিবেচনাশীল হয়ে থাকে।'}
+        ]
+      },
+      { id:'3.3', type:'open', title:'From your vantage point', title_bn:'আপনার দৃষ্টিকোণ থেকে',
+        code:'3.3.1', prompt:"What parenting-related factors most affect a student's behavior and wellbeing at school?",
+        prompt_bn:'সন্তান লালন-পালন সংক্রান্ত কোন বিষয়গুলো স্কুলে একজন শিক্ষার্থীর আচরণ ও মঙ্গলকে সবচেয়ে বেশি প্রভাবিত করে?' }
+    ]
+  }
+};
+
+/* =========================================================
+   GOODBYE / TERMINAL MESSAGES
+   ========================================================= */
+const MESSAGES = {
+  declineConsent: {
+    en:"That's completely alright — thank you for considering it. Nothing has been recorded. You may close this page whenever you're ready.",
+    bn:'এটা সম্পূর্ণ ঠিক আছে — বিবেচনা করার জন্য ধন্যবাদ। কিছুই রেকর্ড করা হয়নি। আপনি যখন প্রস্তুত তখন এই পেজটি বন্ধ করতে পারেন।'
+  },
+  notUrban: {
+    en:"Thank you for your interest — this particular study is focused on urban households in Dhaka, so it isn't quite the right fit this time. We're grateful you considered taking part.",
+    bn:'আপনার আগ্রহের জন্য ধন্যবাদ — এই নির্দিষ্ট গবেষণাটি ঢাকার শহুরে পরিবারগুলোকে কেন্দ্র করে, তাই এবার এটি ঠিক উপযুক্ত নয়। আপনি অংশগ্রহণের কথা বিবেচনা করেছেন তার জন্য আমরা কৃতজ্ঞ।'
+  },
+  traumaExclusion: {
+    en:"Thank you for your honesty. For your own wellbeing, this particular study asks us to step back here, since a couple of later sections revisit difficult family memories. We're grateful you considered taking part, and we hope things are looking after you well.",
+    bn:'আপনার সততার জন্য ধন্যবাদ। আপনার নিজের মঙ্গলের জন্য, এই নির্দিষ্ট গবেষণায় আমাদের এখানেই থেমে যেতে হচ্ছে, কারণ পরবর্তী কিছু অংশ কঠিন পারিবারিক স্মৃতি পুনরায় সামনে আনে। আপনি অংশগ্রহণের কথা বিবেচনা করেছেন তার জন্য আমরা কৃতজ্ঞ, এবং আশা করি সবকিছু আপনার প্রতি সদয় থাকবে।'
+  },
+  categoryIneligible: {
+    en:"Thank you for your interest — based on your answers, this particular study module isn't quite the right fit for you. We're grateful you took the time.",
+    bn:'আপনার আগ্রহের জন্য ধন্যবাদ — আপনার উত্তরের ভিত্তিতে, এই নির্দিষ্ট গবেষণা অংশটি আপনার জন্য উপযুক্ত নয়। আপনি সময় দিয়েছেন তার জন্য আমরা কৃতজ্ঞ।'
+  },
+  partialStopped: {
+    en:"Thank you — what you've already answered has been recorded, and nothing further will be asked. We're grateful for the time you gave this.",
+    bn:'ধন্যবাদ — আপনি এ পর্যন্ত যা উত্তর দিয়েছেন তা রেকর্ড করা হয়েছে, এবং আর কিছু জিজ্ঞাসা করা হবে না। আপনি যে সময় দিয়েছেন তার জন্য আমরা কৃতজ্ঞ।'
+  }
+};
+
+/* =========================================================
+   STATE
+   ========================================================= */
+const state = {
+  lang: 'en',
+  screen: 'hero',
+  category: null,
+  sectionIdx: 0,
+  itemIdx: 0,
+  answers: {},
+  demographics: {},
+  openAnswers: {},
+  skippedSections: [],
+  startedAt: null,
+  screening: {},
+  _lastGoodbyeKey: null,
+  _lastRes: null
+};
+
+const DRAFT_KEY = 'parenting_study_draft_v2';
+
+function saveDraft(){ try{ localStorage.setItem(DRAFT_KEY, JSON.stringify(state)); }catch(e){} }
+function loadDraft(){ try{ const raw = localStorage.getItem(DRAFT_KEY); if(raw) return JSON.parse(raw); }catch(e){} return null; }
+function clearDraft(){ try{ localStorage.removeItem(DRAFT_KEY); }catch(e){} }
+
+/* =========================================================
+   RENDER HELPERS
+   ========================================================= */
+const app = document.getElementById('app');
+
+function el(html){ const tpl = document.createElement('template'); tpl.innerHTML = html.trim(); return tpl.content.firstElementChild; }
+
+function renderThread(fraction){
+  const segs = 10;
+  let html = '<div class="thread">';
+  for(let i=0;i<segs;i++){
+    const segFraction = fraction*segs - i;
+    if(segFraction >= 1) html += `<div class="stitch done"></div>`;
+    else if(segFraction > 0) html += `<div class="stitch current" style="--fillpct:${Math.round(segFraction*100)}%"></div>`;
+    else html += `<div class="stitch"></div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+function overallProgress(){
+  if(!state.category) return 0.03;
+  const cat = CATEGORIES[state.category];
+  const totalSections = cat.sections.length;
+  let unit = 1/totalSections;
+  let base = state.sectionIdx * unit;
+  const sec = cat.sections[state.sectionIdx];
+  if(sec && sec.type === 'scale') base += unit * (state.itemIdx / sec.items.length);
+  return Math.min(0.97, 0.08 + base*0.9);
+}
+
+function frame(innerHTML, {progress=null} = {}){
+  app.innerHTML = '';
+  if(progress !== null) app.insertAdjacentHTML('beforeend', renderThread(progress));
+  const wrap = el(`<div class="page-frame">${innerHTML}</div>`);
+  app.appendChild(wrap);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function foot(){
+  return `<footer class="site-foot">Department of Philosophy, Jagannath University — this study is supervised research and your answers are anonymous.
+    ${bnLine('দর্শন বিভাগ, জগন্নাথ বিশ্ববিদ্যালয় — এই গবেষণাটি একটি তত্ত্বাবধানকৃত গবেষণা এবং আপনার উত্তর সম্পূর্ণ বেনামী।')}</footer>`;
+}
+
+function updateLangButtons(){
+  document.getElementById('lang-en').classList.toggle('active', state.lang==='en');
+  document.getElementById('lang-bn').classList.toggle('active', state.lang==='bn');
+}
+
+/* =========================================================
+   SCREENS
+   ========================================================= */
+
+function screenHero(){
+  state.screen = 'hero';
+  frame(`
+    <p class="eyebrow">${t('A research study — Department of Philosophy, Jagannath University','একটি গবেষণা — দর্শন বিভাগ, জগন্নাথ বিশ্ববিদ্যালয়')}<br><span class="kicker-dot" style="margin-top:6px"></span>${state.lang==='en'?bnLine('একটি গবেষণা — দর্শন বিভাগ, জগন্নাথ বিশ্ববিদ্যালয়'):''}</p>
+    <h1 class="display" lang="${state.lang}">${t('What do we owe the children we raise?','আমরা যে সন্তানদের বড় করি, তাদের প্রতি আমাদের দায়িত্ব কী?')}</h1>
+    ${state.lang==='en' ? `<p class="bn-line" style="margin-top:-10px;">আমরা যে সন্তানদের বড় করি, তাদের প্রতি আমাদের দায়িত্ব কী?</p>`:''}
+    <p class="lede">${t('Every family in Bangladesh answers this question in practice, long before anyone puts it into words. This study is trying to listen to those answers — from parents, from the young people who were raised, and from the teachers who see the results in the classroom.',
+      'বাংলাদেশের প্রতিটি পরিবার এই প্রশ্নের উত্তর বাস্তবে দিয়ে থাকে, শব্দে প্রকাশ করার আগেই। এই গবেষণা সেই উত্তরগুলো শোনার চেষ্টা করছে — বাবা-মায়ের কাছ থেকে, যেসব তরুণ-তরুণী বড় হয়েছেন তাদের কাছ থেকে, এবং শিক্ষকদের কাছ থেকে যারা শ্রেণিকক্ষে এর ফলাফল দেখেন।')}</p>
+    <p>${t("It takes about 15–20 minutes. There's no right answer to look for — we're interested in how things actually are, not how they should be.",
+      'এতে প্রায় ১৫–২০ মিনিট সময় লাগবে। কোনো "সঠিক" উত্তর খোঁজার দরকার নেই — আমরা জানতে চাই বাস্তবে কী ঘটে, আদর্শভাবে কী হওয়া উচিত তা নয়।')}</p>
+    <div class="actions">
+      <button class="btn btn-primary" id="btn-start">${t('Begin','শুরু করুন')}</button>
+      <button class="btn btn-quiet" id="btn-about">${t('What is this study about?','এই গবেষণা সম্পর্কে জানুন')}</button>
+    </div>
+  `, {progress: 0.03});
+
+  document.getElementById('btn-start').onclick = () => goTo('consent');
+  document.getElementById('btn-about').onclick = () => goTo('about');
+}
+
+function screenAbout(){
+  state.screen = 'about';
+  frame(`
+    <p class="eyebrow">${t('About the study','গবেষণা সম্পর্কে')}</p>
+    <h2 class="display" lang="${state.lang}">${t('Moral formation and parental responsibility','নৈতিক গঠন ও পিতামাতার দায়িত্ব')}</h2>
+    <p>${t('Research shows that children raised in emotionally safe homes tend to develop stronger moral reasoning, while strict or emotionally distant parenting is linked to anxiety and reduced empathy. In Bangladesh, national surveys suggest that violent discipline is still very common — but almost no research has asked whether these widespread habits actually meet the ethical responsibilities parents hold toward their children.',
+      'গবেষণায় দেখা যায়, যেসব শিশু মানসিকভাবে নিরাপদ পরিবেশে বেড়ে ওঠে তাদের নৈতিক বিচারবোধ তুলনামূলকভাবে শক্তিশালী হয়, অন্যদিকে কঠোর বা মানসিকভাবে দূরত্বপূর্ণ সন্তান লালন-পালন উদ্বেগ ও সহানুভূতি হ্রাসের সাথে সম্পর্কিত। বাংলাদেশে জাতীয় জরিপগুলো দেখায় যে সহিংস শাসন এখনো বেশ প্রচলিত — কিন্তু প্রায় কোনো গবেষণাই জানতে চায়নি যে এই ব্যাপকভাবে প্রচলিত অভ্যাসগুলো সন্তানদের প্রতি বাবা-মায়ের নৈতিক দায়িত্ব আসলে পূরণ করে কিনা।')}</p>
+    <p>${t('This study brings together everyday parenting practices and ideas from moral philosophy — including the ethics of care and virtue ethics — to think through what good parenting actually asks of us in this context.',
+      'এই গবেষণা দৈনন্দিন সন্তান লালন-পালনের চর্চাকে নৈতিক দর্শনের ধারণার সাথে — যার মধ্যে আছে কেয়ার এথিক্স ও ভার্চু এথিক্স — একত্রিত করে ভাবার চেষ্টা করে যে এই প্রেক্ষাপটে ভালো সন্তান লালন-পালন আসলে আমাদের কাছে কী দাবি করে।')}</p>
+    <ul class="plain">
+      <li>${t('Your participation is entirely voluntary.','আপনার অংশগ্রহণ সম্পূর্ণ স্বেচ্ছাপ্রণোদিত।')}</li>
+      <li>${t("Your answers are anonymous — we don't collect your name or contact details.",'আপনার উত্তরগুলো সম্পূর্ণ বেনামী — আমরা আপনার নাম বা যোগাযোগের তথ্য সংগ্রহ করি না।')}</li>
+      <li>${t('Some questions touch on discipline and family life, which can feel personal. You can skip any section or stop at any time.',
+        'কিছু প্রশ্ন শাসন ও পারিবারিক জীবন নিয়ে, যা ব্যক্তিগত মনে হতে পারে। আপনি যেকোনো অংশ এড়িয়ে যেতে পারেন বা যেকোনো সময় থামতে পারেন।')}</li>
+    </ul>
+    <div class="actions">
+      <button class="btn btn-primary" id="btn-continue">${t('Continue','চালিয়ে যান')}</button>
+      <button class="btn btn-ghost" id="btn-back">${t('Back','পেছনে যান')}</button>
+    </div>
+  `, {progress: 0.03});
+  document.getElementById('btn-continue').onclick = () => goTo('consent');
+  document.getElementById('btn-back').onclick = () => goTo('hero');
+}
+
+function screenConsent(){
+  state.screen = 'consent';
+  frame(`
+    <p class="eyebrow">${t('Before you begin','শুরু করার আগে')}</p>
+    <h2 class="display" lang="${state.lang}">${t('Your consent','আপনার সম্মতি')}</h2>
+    <p>${t('A few things worth knowing before you start:','শুরু করার আগে কয়েকটি বিষয় জেনে নেওয়া ভালো:')}</p>
+    <ul class="plain">
+      <li>${t('Nothing you share is linked to your name or identity.','আপনি যা কিছু শেয়ার করবেন তা আপনার নাম বা পরিচয়ের সাথে যুক্ত থাকবে না।')}</li>
+      <li>${t("A few sections ask about discipline and family conflict, which some people find difficult to think about. You'll always be told before those sections start, and you can skip them or stop entirely.",
+        'কয়েকটি অংশে শাসন ও পারিবারিক দ্বন্দ্ব নিয়ে প্রশ্ন করা হবে, যা কারো কারো জন্য ভাবতে কঠিন হতে পারে। সেই অংশগুলো শুরু হওয়ার আগে আপনাকে সবসময় জানানো হবে, এবং আপনি সেগুলো এড়িয়ে যেতে বা সম্পূর্ণভাবে থামতে পারেন।')}</li>
+      <li>${t("You may leave at any point — anything you've already answered up to that point will still be kept for the study, unless you'd rather it wasn't (we'll ask).",
+        'আপনি যেকোনো মুহূর্তে চলে যেতে পারেন — সেই পর্যন্ত আপনার দেওয়া উত্তরগুলো গবেষণার জন্য রাখা হবে, যদি না আপনি না চান (আমরা জিজ্ঞাসা করব)।')}</li>
+      <li>${t("There's no payment or benefit for taking part, and no penalty for declining.",'অংশগ্রহণের জন্য কোনো পারিশ্রমিক বা সুবিধা নেই, এবং প্রত্যাখ্যান করলে কোনো শাস্তিও নেই।')}</li>
+    </ul>
+    <p class="fine">${t("If you'd like to ask the research team anything before deciding, you're welcome to close this page and reach out to the Department of Philosophy, Jagannath University, first.",
+      'সিদ্ধান্ত নেওয়ার আগে গবেষণা দলকে কিছু জিজ্ঞাসা করতে চাইলে, আপনি এই পেজটি বন্ধ করে প্রথমে দর্শন বিভাগ, জগন্নাথ বিশ্ববিদ্যালয়-এর সাথে যোগাযোগ করতে পারেন।')}</p>
+    <div class="actions">
+      <button class="btn btn-primary" id="btn-agree">${t('I understand, continue','বুঝেছি, চালিয়ে যান')}</button>
+      <button class="btn btn-quiet" id="btn-decline">${t("I'd rather not continue",'আমি চালিয়ে যেতে চাই না')}</button>
+    </div>
+  `, {progress: 0.05});
+
+  document.getElementById('btn-agree').onclick = () => goTo('screening');
+  document.getElementById('btn-decline').onclick = async () => {
+    await saveToFirestore('partial_exits', { stage: 'consent_declined', answers: {}, demographics: {}, category: null });
+    clearDraft();
+    screenGoodbye('declineConsent');
+  };
+}
+
+function screenScreening(){
+  state.screen = 'screening';
+  frame(`
+    <p class="eyebrow">${t('Quick check','দ্রুত যাচাই')}</p>
+    <h2 class="display" lang="${state.lang}">${t('Two quick questions','দুটি ছোট প্রশ্ন')}</h2>
+    <p class="lede">${t('These just help us confirm this study is a good fit for you right now.','এগুলো শুধু নিশ্চিত করতে সাহায্য করবে যে এই গবেষণা এই মুহূর্তে আপনার জন্য উপযুক্ত কিনা।')}</p>
+    <div class="field">
+      <label>${t('Do you (and your household) currently live in an urban area of Dhaka, or did you grow up in one?',
+        'আপনি (এবং আপনার পরিবার) কি বর্তমানে ঢাকার কোনো শহুরে এলাকায় বাস করেন, অথবা সেখানে বেড়ে উঠেছেন?')}</label>
+      <div class="pill-group" id="pg-dhaka">
+        <button class="pill" data-val="yes">${t('Yes','হ্যাঁ')}</button>
+        <button class="pill" data-val="no">${t('No','না')}</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>${t('Are you currently receiving psychiatric treatment for a trauma-related condition?',
+        'আপনি কি বর্তমানে কোনো মানসিক আঘাত-সম্পর্কিত অবস্থার জন্য মনোরোগ চিকিৎসা নিচ্ছেন?')}</label>
+      <p class="hint">${t("We ask only because a couple of later questions touch on difficult family memories, and we'd rather you not encounter them right now if that's the case. There's no wrong answer.",
+        'আমরা শুধু এই কারণে জিজ্ঞাসা করছি যে পরবর্তী কিছু প্রশ্ন কঠিন পারিবারিক স্মৃতি স্পর্শ করে, এবং তেমনটা হলে আমরা চাই না আপনি এখন সেগুলোর মুখোমুখি হন। এখানে কোনো ভুল উত্তর নেই।')}</p>
+      <div class="pill-group" id="pg-trauma">
+        <button class="pill" data-val="yes">${t('Yes','হ্যাঁ')}</button>
+        <button class="pill" data-val="no">${t('No','না')}</button>
+        <button class="pill" data-val="prefer">${t('Prefer not to say','বলতে চাই না')}</button>
+      </div>
+    </div>
+    <p class="error-text" id="screen-err">${t('Please answer both questions to continue.','চালিয়ে যেতে অনুগ্রহ করে দুটি প্রশ্নেরই উত্তর দিন।')}</p>
+    <div class="actions">
+      <button class="btn btn-primary" id="btn-screen-next">${t('Continue','চালিয়ে যান')}</button>
+      <button class="btn btn-ghost" id="btn-screen-back">${t('Back','পেছনে যান')}</button>
+    </div>
+  `, {progress: 0.08});
+
+  let dhaka = null, trauma = null;
+  document.querySelectorAll('#pg-dhaka .pill').forEach(b=>{ b.onclick = () => { dhaka = b.dataset.val; setSelected('#pg-dhaka', b); }; });
+  document.querySelectorAll('#pg-trauma .pill').forEach(b=>{ b.onclick = () => { trauma = b.dataset.val; setSelected('#pg-trauma', b); }; });
+
+  document.getElementById('btn-screen-back').onclick = () => goTo('consent');
+  document.getElementById('btn-screen-next').onclick = async () => {
+    if(!dhaka || !trauma){ document.getElementById('screen-err').classList.add('show'); return; }
+    if(dhaka === 'no'){ await saveToFirestore('screened_out', { reason:'not_urban_dhaka' }); screenGoodbye('notUrban'); return; }
+    if(trauma === 'yes'){ await saveToFirestore('screened_out', { reason:'trauma_exclusion' }); screenGoodbye('traumaExclusion'); return; }
+    state.screening = { dhaka, trauma };
+    goTo('category');
+  };
+}
+
+function setSelected(groupSel, btn){
+  document.querySelectorAll(groupSel + ' .pill').forEach(p=>p.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function screenGoodbye(key){
+  state.screen = 'goodbye';
+  state._lastGoodbyeKey = key;
+  const msg = MESSAGES[key] ? t(MESSAGES[key].en, MESSAGES[key].bn) : '';
+  const other = MESSAGES[key] ? (state.lang==='en' ? MESSAGES[key].bn : null) : null;
+  frame(`
+    <p class="eyebrow">${t('Thank you','ধন্যবাদ')}</p>
+    <h2 class="display" lang="${state.lang}">${t("You're free to go",'আপনি চাইলে চলে যেতে পারেন')}</h2>
+    <p class="lede">${msg}</p>
+    ${other ? `<p class="bn-line">${other}</p>` : ''}
+    <p class="fine">${t("You can close this tab now, or return to the start if you'd like to look around again.",
+      'আপনি এখন এই ট্যাবটি বন্ধ করতে পারেন, অথবা আবার দেখতে চাইলে শুরুতে ফিরে যেতে পারেন।')}</p>
+    <div class="actions">
+      <button class="btn btn-quiet" id="btn-restart">${t('Return to start','শুরুতে ফিরে যান')}</button>
+    </div>
+    ${foot()}
+  `);
+  document.getElementById('btn-restart').onclick = () => { resetState(); goTo('hero'); };
+}
+
+function screenCategory(){
+  state.screen = 'category';
+  const cats = Object.entries(CATEGORIES);
+  frame(`
+    <p class="eyebrow">${t('Almost there','প্রায় শেষ')}</p>
+    <h2 class="display" lang="${state.lang}">${t('Which of these describes you?','নিচের কোনটি আপনার সাথে সবচেয়ে মেলে?')}</h2>
+    <p class="lede">${t('The questions ahead are tailored to your role, so pick whichever fits best.','সামনের প্রশ্নগুলো আপনার ভূমিকা অনুযায়ী সাজানো, তাই যেটি সবচেয়ে উপযুক্ত মনে হয় সেটি বেছে নিন।')}</p>
+    <div class="cat-grid">
+      ${cats.map(([key,c])=>`
+        <button class="cat-card" data-cat="${key}">
+          <span class="cat-title">${t(c.label,c.label_bn)}${state.lang==='en'?bnLine(c.label_bn):''}</span>
+          <span class="cat-desc">${t(c.blurb,c.blurb_bn)}${state.lang==='en'?bnLine(c.blurb_bn):''}</span>
+        </button>`).join('')}
+    </div>
+    <div class="actions"><button class="btn btn-ghost" id="btn-cat-back">${t('Back','পেছনে যান')}</button></div>
+  `, {progress: 0.1});
+
+  document.querySelectorAll('.cat-card').forEach(b=>{
+    b.onclick = () => {
+      state.category = b.dataset.cat;
+      state.sectionIdx = 0; state.itemIdx = 0; state.startedAt = Date.now();
+      state.screen = 'survey';
+      saveDraft();
+      renderSection();
+    };
+  });
+  document.getElementById('btn-cat-back').onclick = () => goTo('screening');
+}
+
+/* ---------- section renderer dispatcher ---------- */
+function renderSection(){
+  state.screen = 'survey';
+  const cat = CATEGORIES[state.category];
+  const sec = cat.sections[state.sectionIdx];
+  if(!sec){ state.screen = 'finish'; return screenFinish(); }
+  if(sec.type === 'demo') return renderDemoSection(sec);
+  if(sec.type === 'checkpoint') return renderCheckpoint(sec);
+  if(sec.type === 'scale') return renderScaleItem(sec);
+  if(sec.type === 'open') return renderOpenSection(sec);
+}
+
+function nextSection(){ state.sectionIdx += 1; state.itemIdx = 0; saveDraft(); renderSection(); }
+
+/* ---------- demographic form ---------- */
+function renderDemoSection(sec){
+  const fieldsHtml = sec.fields.map(f => {
+    const existing = state.demographics[f.key] ?? '';
+    const labelHtml = `${t(f.label,f.label_bn)}${f.required?'':` <span style="font-weight:400;color:var(--ink-soft);">(${t('optional','ঐচ্ছিক')})</span>`}${state.lang==='en'?bnLine(f.label_bn):''}`;
+    if(f.kind === 'select'){
+      const opts = f.options.map((o,i)=>{
+        const olabel = state.lang==='bn' && f.options_bn ? f.options_bn[i] : o;
+        return `<option value="${o}" ${existing===o?'selected':''}>${olabel}</option>`;
+      }).join('');
+      return `
+        <div class="field" data-key="${f.key}">
+          <label>${labelHtml}</label>
+          <select>
+            <option value="" ${existing===''?'selected':''} disabled>${t('Choose one…','একটি বেছে নিন…')}</option>
+            ${opts}
+          </select>
+          ${f.hint?`<div class="hint">${t(f.hint,f.hint_bn)}${state.lang==='en'?bnLine(f.hint_bn):''}</div>`:''}
+          <div class="error-text">${t('Please make a selection.','অনুগ্রহ করে একটি নির্বাচন করুন।')}</div>
+        </div>`;
+    }
+    if(f.kind === 'number'){
+      return `
+        <div class="field" data-key="${f.key}">
+          <label>${labelHtml}</label>
+          <input type="number" min="${f.min??''}" max="${f.max??''}" value="${existing}">
+          ${f.hint?`<div class="hint">${t(f.hint,f.hint_bn)}${state.lang==='en'?bnLine(f.hint_bn):''}</div>`:''}
+          <div class="error-text">${t('Please enter a valid number.','অনুগ্রহ করে সঠিক সংখ্যা লিখুন।')}</div>
+        </div>`;
+    }
+    return `
+      <div class="field" data-key="${f.key}">
+        <label>${labelHtml}</label>
+        <input type="text" value="${existing}">
+        ${f.hint?`<div class="hint">${t(f.hint,f.hint_bn)}</div>`:''}
+      </div>`;
+  }).join('');
+
+  frame(`
+    <p class="eyebrow">${t(CATEGORIES[state.category].label,CATEGORIES[state.category].label_bn)} ${t('questionnaire','প্রশ্নমালা')} — ${t('Section','অংশ')} ${sec.id}</p>
+    <h2 class="display" lang="${state.lang}">${t(sec.title,sec.title_bn)}</h2>
+    ${state.lang==='en'&&sec.title_bn ? `<p class="bn-line" style="margin-top:-10px;">${sec.title_bn}</p>`:''}
+    ${sec.note?`<p class="lede">${t(sec.note,sec.note_bn)}${state.lang==='en'?bnLine(sec.note_bn):''}</p>`:''}
+    <div id="demo-form">${fieldsHtml}</div>
+    <div class="btn-row-between">
+      <button class="btn btn-ghost" id="btn-demo-back">${t('Back','পেছনে যান')}</button>
+      <button class="btn btn-primary" id="btn-demo-next">${t('Continue','চালিয়ে যান')}</button>
+    </div>
+  `, {progress: overallProgress()});
+
+  document.getElementById('btn-demo-back').onclick = () => {
+    if(state.sectionIdx === 0){ goTo('category'); }
+    else { state.sectionIdx -= 1; saveDraft(); renderSection(); }
+  };
+
+  document.getElementById('btn-demo-next').onclick = () => {
+    let ok = true; let eligibilityFail = null;
+    sec.fields.forEach(f=>{
+      const wrap = document.querySelector(`#demo-form [data-key="${f.key}"]`);
+      const input = wrap.querySelector('input,select');
+      const val = input.value;
+      const errBox = wrap.querySelector('.error-text');
+      if(f.required && (val === '' || val === null)){ ok = false; if(errBox) errBox.classList.add('show'); return; }
+      else if(errBox){ errBox.classList.remove('show'); }
+      state.demographics[f.key] = val;
+      if(f.eligibility){
+        if(f.eligibility.failValue && val === f.eligibility.failValue) eligibilityFail = true;
+        if(f.eligibility.failIfLessThan !== undefined && val !== '' && Number(val) < f.eligibility.failIfLessThan) eligibilityFail = true;
+      }
+    });
+    if(!ok) return;
+    saveDraft();
+    if(eligibilityFail){
+      saveToFirestore('screened_out', { reason: 'category_criteria_'+state.category });
+      screenGoodbye('categoryIneligible');
+      return;
+    }
+    nextSection();
+  };
+}
+
+/* ---------- checkpoint / re-consent gate ---------- */
+function renderCheckpoint(sec){
+  frame(`
+    <p class="eyebrow">${t('A brief pause','একটু বিরতি')}</p>
+    <h2 class="display" lang="${state.lang}">${t(sec.title,sec.title_bn)}</h2>
+    <div class="gate-box">${t(sec.text,sec.text_bn)}${state.lang==='en'?bnLine(sec.text_bn):''}</div>
+    <div class="actions stack">
+      <button class="btn btn-primary" id="btn-gate-continue">${t('Continue to these questions','এই প্রশ্নগুলোতে এগিয়ে যান')}</button>
+      <button class="btn btn-quiet" id="btn-gate-skip">${t('Skip just this section','শুধু এই অংশটি এড়িয়ে যান')}</button>
+      <button class="btn btn-ghost" id="btn-gate-stop">${t("Stop and submit what I've answered so far",'থামুন এবং এখন পর্যন্ত দেওয়া উত্তরগুলো জমা দিন')}</button>
+    </div>
+  `, {progress: overallProgress()});
+
+  document.getElementById('btn-gate-continue').onclick = () => nextSection();
+  document.getElementById('btn-gate-skip').onclick = () => {
+    const cat = CATEGORIES[state.category];
+    const nextIdx = state.sectionIdx + 1;
+    const targetSectionId = cat.sections[nextIdx] ? cat.sections[nextIdx].id : null;
+    if(targetSectionId) state.skippedSections.push(targetSectionId);
+    state.sectionIdx += 2; state.itemIdx = 0; saveDraft(); renderSection();
+  };
+  document.getElementById('btn-gate-stop').onclick = async () => { await submitPartial(); };
+}
+
+/* ---------- one-question-at-a-time scale flow ---------- */
+function renderScaleItem(sec){
+  const item = sec.items[state.itemIdx];
+  const scaleKey = sec.mixedScale ? item.scale : sec.scale;
+  const scale = SCALES[scaleKey];
+  const existing = state.answers[item.code];
+  const labels = state.lang==='bn' ? scale.labels_bn : scale.labels;
+  const lowLbl = state.lang==='bn' ? scale.low_bn : scale.low;
+  const highLbl = state.lang==='bn' ? scale.high_bn : scale.high;
+
+  frame(`
+    <p class="scale-section-label">${t(CATEGORIES[state.category].label,CATEGORIES[state.category].label_bn)} ${t('questionnaire','প্রশ্নমালা')} — ${t(sec.title,sec.title_bn)}</p>
+    ${sec.note ? `<p class="lede" style="margin-bottom:2px;">${t(sec.note,sec.note_bn)}</p>` : ''}
+    <h2 class="scale-question" lang="${state.lang}">${t(item.text,item.text_bn)}</h2>
+    ${state.lang==='en' && item.text_bn ? `<p class="scale-question-bn" lang="bn">${item.text_bn}</p>` : ''}
+    <div class="scale-track">
+      <div class="scale-endlabels">
+        <span>${lowLbl}${state.lang==='en'&&scale.low_bn?bnLine(scale.low_bn):''}</span>
+        <span>${highLbl}${state.lang==='en'&&scale.high_bn?bnLine(scale.high_bn):''}</span>
+      </div>
+      <div class="scale-buttons" id="scale-btns">
+        ${scale.values.map((v,i)=>`
+          <button class="scale-btn ${existing===v?'selected':''}" data-val="${v}">
+            <span class="num">${v}</span>
+            <span>${labels[i]}</span>
+          </button>`).join('')}
+      </div>
+    </div>
+    <div class="btn-row-between">
+      <button class="btn btn-ghost" id="btn-scale-back">${t('Back','পেছনে যান')}</button>
+      <button class="btn btn-primary" id="btn-scale-next" ${existing===undefined?'disabled':''}>${t('Next','পরবর্তী')}</button>
+    </div>
+  `, {progress: overallProgress()});
+
+  document.querySelectorAll('#scale-btns .scale-btn').forEach(b=>{
+    b.onclick = () => {
+      const val = Number(b.dataset.val);
+      state.answers[item.code] = val;
+      document.querySelectorAll('#scale-btns .scale-btn').forEach(x=>x.classList.remove('selected'));
+      b.classList.add('selected');
+      document.getElementById('btn-scale-next').disabled = false;
+      saveDraft();
+    };
+  });
+
+  document.getElementById('btn-scale-back').onclick = () => {
+    if(state.itemIdx > 0){ state.itemIdx -= 1; renderScaleItem(sec); }
+    else if(state.sectionIdx > 0){
+      state.sectionIdx -= 1;
+      const prev = CATEGORIES[state.category].sections[state.sectionIdx];
+      state.itemIdx = prev.type==='scale' ? prev.items.length-1 : 0;
+      saveDraft(); renderSection();
+    } else { goTo('category'); }
+  };
+
+  document.getElementById('btn-scale-next').onclick = () => {
+    if(state.itemIdx < sec.items.length - 1){ state.itemIdx += 1; saveDraft(); renderScaleItem(sec); }
+    else { nextSection(); }
+  };
+}
+
+/* ---------- open text ---------- */
+function renderOpenSection(sec){
+  const existing = state.openAnswers[sec.code] || '';
+  frame(`
+    <p class="eyebrow">${t(CATEGORIES[state.category].label,CATEGORIES[state.category].label_bn)} ${t('questionnaire','প্রশ্নমালা')} — ${t(sec.title,sec.title_bn)}</p>
+    <h2 class="display" lang="${state.lang}">${t(sec.prompt,sec.prompt_bn)}</h2>
+    ${state.lang==='en'&&sec.prompt_bn ? `<p class="bn-line" style="margin-top:-8px;">${sec.prompt_bn}</p>`:''}
+    <p class="lede">${t('Answer in your own words — a sentence or two is plenty. You can also leave this blank.',
+      'নিজের ভাষায় উত্তর দিন — এক বা দুই বাক্যই যথেষ্ট। আপনি এটি খালি রেখেও যেতে পারেন।')}</p>
+    <div class="field">
+      <textarea id="open-text" placeholder="${t('Type your thoughts here…','এখানে আপনার ভাবনা লিখুন…')}">${existing}</textarea>
+    </div>
+    <div class="btn-row-between">
+      <button class="btn btn-ghost" id="btn-open-back">${t('Back','পেছনে যান')}</button>
+      <button class="btn btn-primary" id="btn-open-next">${t('Continue','চালিয়ে যান')}</button>
+    </div>
+  `, {progress: overallProgress()});
+
+  document.getElementById('btn-open-back').onclick = () => {
+    if(state.sectionIdx > 0){
+      state.sectionIdx -= 1;
+      const prev = CATEGORIES[state.category].sections[state.sectionIdx];
+      state.itemIdx = prev.type==='scale' ? prev.items.length-1 : 0;
+      saveDraft(); renderSection();
+    } else goTo('category');
+  };
+  document.getElementById('btn-open-next').onclick = () => {
+    state.openAnswers[sec.code] = document.getElementById('open-text').value.trim();
+    saveDraft();
+    nextSection();
+  };
+}
+
+/* ---------- finish / submit ---------- */
+async function screenFinish(){
+  state.screen = 'finish';
+  frame(`
+    <p class="eyebrow">${t('Last step','শেষ ধাপ')}</p>
+    <h2 class="display" lang="${state.lang}">${t("That's everything",'এটাই সব')}</h2>
+    <p class="lede">${t('Thank you for thinking through these questions so carefully — it is not always easy, especially the ones about discipline and family life.',
+      'এই প্রশ্নগুলো নিয়ে এত মনোযোগ সহকারে ভাবার জন্য ধন্যবাদ — এটা সবসময় সহজ নয়, বিশেষ করে শাসন ও পারিবারিক জীবন সম্পর্কিত প্রশ্নগুলো।')}</p>
+    <p>${t('Ready to send in your answers?','আপনার উত্তরগুলো পাঠাতে প্রস্তুত?')}</p>
+    <div class="actions">
+      <button class="btn btn-primary" id="btn-submit">${t('Submit my answers','আমার উত্তর জমা দিন')}</button>
+    </div>
+  `, {progress: 0.97});
+
+  document.getElementById('btn-submit').onclick = async (e) => {
+    e.target.disabled = true;
+    e.target.innerHTML = `<span class="loader-dot"></span><span class="loader-dot"></span><span class="loader-dot"></span>`;
+    const payload = buildPayload('complete');
+    const res = await saveToFirestore('submissions', payload);
+    clearDraft();
+    state._lastRes = res;
+    screenThankYou(res);
+  };
+}
+
+function buildPayload(status){
+  return {
+    status, category: state.category, demographics: state.demographics, answers: state.answers,
+    openAnswers: state.openAnswers, skippedSections: state.skippedSections, screening: state.screening,
+    language: state.lang,
+    durationSeconds: state.startedAt ? Math.round((Date.now()-state.startedAt)/1000) : null
+  };
+}
+
+async function submitPartial(){
+  const payload = buildPayload('partial_stopped');
+  await saveToFirestore('partial_exits', payload);
+  clearDraft();
+  screenGoodbye('partialStopped');
+}
+
+function screenThankYou(res){
+  state.screen = 'thankyou'; state._lastRes = res;
+  frame(`
+    <p class="eyebrow"><span class="kicker-dot"></span>${t('Thank you','ধন্যবাদ')}</p>
+    <h2 class="display" lang="${state.lang}">${t('Your answers have been recorded','আপনার উত্তর রেকর্ড করা হয়েছে')}</h2>
+    <p class="lede">${t("This research is trying to say something true about how children are raised here, and what they're owed. You've just helped make that possible.",
+      'এই গবেষণা এখানে সন্তানরা কীভাবে বড় হয় এবং তাদের প্রতি কী দায়বদ্ধতা রয়েছে সে সম্পর্কে সত্য কিছু বলার চেষ্টা করছে। আপনি এইমাত্র তা সম্ভব করতে সাহায্য করলেন।')}</p>
+    ${res && res.offline ? `<p class="fine">${t("(Note: this deployment isn't yet connected to a live database, so your response was only logged to the browser console for testing.)",
+      '(দ্রষ্টব্য: এই সংস্করণটি এখনো কোনো লাইভ ডেটাবেসের সাথে সংযুক্ত নয়, তাই আপনার উত্তর শুধু পরীক্ষার জন্য ব্রাউজার কনসোলে লগ করা হয়েছে।)')}</p>` : ''}
+    <p class="fine">${t('You may close this tab now.','আপনি এখন এই ট্যাবটি বন্ধ করতে পারেন।')}</p>
+    ${foot()}
+  `);
+}
+
+/* =========================================================
+   ROUTER
+   ========================================================= */
+function resetState(){
+  state.screen='hero'; state.category=null; state.sectionIdx=0; state.itemIdx=0;
+  state.answers={}; state.demographics={}; state.openAnswers={}; state.skippedSections=[];
+  state.startedAt=null; state.screening={}; state._lastGoodbyeKey=null; state._lastRes=null;
+  clearDraft();
+}
+
+function goTo(screen){
+  state.screen = screen;
+  if(screen==='hero') return screenHero();
+  if(screen==='about') return screenAbout();
+  if(screen==='consent') return screenConsent();
+  if(screen==='screening') return screenScreening();
+  if(screen==='category') return screenCategory();
+}
+
+function renderCurrentScreen(){
+  updateLangButtons();
+  switch(state.screen){
+    case 'hero': return screenHero();
+    case 'about': return screenAbout();
+    case 'consent': return screenConsent();
+    case 'screening': return screenScreening();
+    case 'category': return screenCategory();
+    case 'survey': return renderSection();
+    case 'finish': return screenFinish();
+    case 'thankyou': return screenThankYou(state._lastRes);
+    case 'goodbye': return screenGoodbye(state._lastGoodbyeKey || 'declineConsent');
+    default: return screenHero();
+  }
+}
+
+/* language toggle wiring (persists across every screen) */
+document.getElementById('lang-en').addEventListener('click', () => { state.lang='en'; saveDraft(); renderCurrentScreen(); });
+document.getElementById('lang-bn').addEventListener('click', () => { state.lang='bn'; saveDraft(); renderCurrentScreen(); });
+
+/* =========================================================
+   BOOT — resume a draft if one exists
+   ========================================================= */
+(function boot(){
+  const draft = loadDraft();
+  if(draft){
+    Object.assign(state, draft);
+    updateLangButtons();
+    if(draft.category && draft.screen && draft.screen !== 'hero'){
+      renderCurrentScreen();
+      return;
+    }
+  }
+  updateLangButtons();
+  screenHero();
+})();
+</script>
+</body>
+</html>
